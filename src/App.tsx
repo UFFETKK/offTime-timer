@@ -1,27 +1,35 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import Box from "./components/Box";
 import Btn from "./components/Btn";
-import InputBtn from "./components/InputBtn";
+import Header from "./components/Header";
+import TimeBox from "./components/TimeBox";
 import "./index.css";
 import "./lang/i18n";
 
 const KO = "ko";
 const EN = "en";
-const LOCAL_STORAGE_KEY: string[] = ["hour", "min", "lang"];
+const KEY_LANG = "lang";
+
 function App() {
   const { t, i18n } = useTranslation();
-  const [lang, setLang] = useState<string>("ko");
+  const [lang, setLang] = useState<string>(KO);
   const [inputTime, setInputTime] = useState<ITime>({
     hour: "",
     min: "",
+    totalHour: "",
+    totalMin: "",
+    isNoon: "AM",
   });
   const [isEditMode, setIsEditMode] = useState<Boolean>(true);
 
   const changeLang = (value: string) => {
     setLang(() => value);
     i18n.changeLanguage(value);
-    localStorage.setItem("lang", value);
+    localStorage.setItem(KEY_LANG, value);
+  };
+
+  const selectIsNoon = (value: string) => {
+    setInputTime({ ...inputTime, isNoon: value });
   };
 
   const onChangeInput = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -32,7 +40,13 @@ function App() {
   const onSubmit = async () => {
     if (isEditMode) {
       for (const key in inputTime) {
-        const value: string = inputTime[key];
+        let value;
+        if (!!inputTime[key].length) {
+          value = inputTime[key];
+        } else {
+          value = "00";
+          setInputTime({ ...inputTime, [key]: value });
+        }
         localStorage.setItem(key, value);
       }
       setIsEditMode(false);
@@ -44,64 +58,49 @@ function App() {
   };
 
   useEffect(() => {
-    LOCAL_STORAGE_KEY.forEach((key: string) => {
-      const value = localStorage.getItem(key);
-      if (key == lang) {
-        i18n.changeLanguage(value || lang);
-        setLang(value || lang);
-      } else {
-        setInputTime({ ...inputTime, [key]: value || "" });
-      }
-    });
+    const localLang = localStorage.getItem(KEY_LANG);
+    i18n.changeLanguage(localLang || lang);
+    setLang(localLang || lang);
+    const copy = { ...inputTime };
+
+    for (let key in inputTime) {
+      copy[key as keyof typeof inputTime] = localStorage.getItem(key) || "";
+    }
+    setInputTime(copy);
   }, []);
 
   return (
     <div className="bg-bluegrey-900 w-screen h-screen ">
-      <header className="w-full h-[10vh] flex items-center px-10 gap-10 justify-between">
-        <p className="text-bluegrey-100 text-2xl font-bold">{t("난 시계만 바라봐")}</p>
-        <div className="flex gap-10">
-          <button
-            className={lang == KO ? "text-gray-100" : "text-bluegrey-700"}
-            onClick={() => changeLang(KO)}
-          >
-            {t("한국어")}
-          </button>
-          <button
-            className={lang == EN ? "text-gray-100" : "text-bluegrey-700"}
-            onClick={() => changeLang(EN)}
-          >
-            {t("영어")}
-          </button>
-        </div>
-      </header>
-      <div className="w-full h-[90vh] flex flex-col justify-center items-center gap-10">
-        <p className="text-gray-100 text-2xl font-bold">{t("퇴근 언제해...?")}</p>
-        <p className="text-gray-100 text-xl font-bold ">{t("내 출근 시간")}</p>
-        <div className="flex gap-10 items-end">
-          <div className="flex flex-col justify-center items-center gap-3">
-            <p className="text-gray-100">{t("시간")}</p>
-            {isEditMode ? (
-              <InputBtn name="hour" value={inputTime.hour} func={onChangeInput} />
-            ) : (
-              <Box text={inputTime.hour} />
-            )}
-          </div>
-          <div className="flex flex-col justify-center items-center gap-3">
-            <p className="text-gray-100">{t("분")}</p>
-            {isEditMode ? (
-              <InputBtn name="min" value={inputTime.min} func={onChangeInput} />
-            ) : (
-              <Box text={inputTime.min} />
-            )}
-          </div>
+      <Header KO={KO} EN={EN} changeLang={changeLang} lang={lang} />
+      <div className="w-full h-[90vh] flex flex-col justify-center items-center gap-10 px-[28rem] ">
+        <div className="w-full flex justify-around gap-20 pb-10">
+          <p className="text-gray-100 text-2xl font-bold pb-5">{t("퇴근 언제해...?")}</p>
           <Btn text={isEditMode ? "확인" : "수정"} func={onSubmit} />
+        </div>
+        <div className="flex gap-10 justify-center items-start">
+          <TimeBox
+            func={onChangeInput}
+            title="근로 시간"
+            names={["totalHour", "totalMin"]}
+            inputTime={inputTime}
+            isEditMode={isEditMode}
+          />
+
+          <TimeBox
+            func={onChangeInput}
+            title="내 출근 시간"
+            names={["hour", "min"]}
+            inputTime={inputTime}
+            isEditMode={isEditMode}
+            selectIsNoon={selectIsNoon}
+          />
         </div>
       </div>
     </div>
   );
 }
 
-interface ITime {
+export interface ITime {
   [key: string]: string;
 }
 

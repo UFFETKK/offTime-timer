@@ -1,12 +1,14 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
 
-function Box({ text, color }: IProps) {
+function Box({ text, color = "gray-400", func }: IProps) {
   const { t } = useTranslation();
+  console.log(color);
 
   return (
     <div
-      className={`flex justify-center items-center w-[150px] h-[50px] rounded-lg text-w bg-gray-400`}
+      onClick={func}
+      className={`flex justify-center items-center w-[150px] h-[50px] rounded-lg text-w bg-${color}`}
     >
       {t(text)}
     </div>
@@ -15,6 +17,7 @@ function Box({ text, color }: IProps) {
 interface IProps {
   text: string;
   color?: string;
+  func?: any;
 }
 
 export default Box;

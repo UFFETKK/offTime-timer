@@ -3,11 +3,12 @@
   "난 시계만 바라봐": "I only look at the clock",
   "한국어": "Korean",
   "영어": "English",
-  "내 출근 시간": "enter your working time",
+  "내 출근 시간": "When did you go to work?",
   "시간": "Hour",
   "분": "Minute",
   "확인": "Submit",
   "저장 되었습니다.": "Saved!",
   "수정": "Edit",
-  "수정하세요!": "Turn on Edit mode!"
+  "수정하세요!": "Turn on Edit mode!",
+  "근로 시간": "How much do you work per day?"
 }
