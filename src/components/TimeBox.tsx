@@ -20,7 +20,8 @@ function TimeBox({ selectIsNoon, title, inputTime, func, isEditMode, names }: IP
                 key={i}
                 text={item}
                 func={() => selectIsNoon(item)}
-                color={inputTime.isNoon == item ? "gray-800" : "gray-400"}
+                color={inputTime.isNoon == item ? "dark" : "light"}
+                checked={inputTime.isNoon == item}
               />
             ))}
           </div>

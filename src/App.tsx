@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import Btn from "./components/Btn";
 import Header from "./components/Header";
+import OffTimeBox from "./components/OffTimeBox";
 import TimeBox from "./components/TimeBox";
 import "./index.css";
 import "./lang/i18n";
@@ -39,16 +40,25 @@ function App() {
 
   const onSubmit = async () => {
     if (isEditMode) {
-      for (const key in inputTime) {
+      const copy = { ...inputTime };
+      for (const key in copy) {
         let value;
-        if (!!inputTime[key].length) {
-          value = inputTime[key];
-        } else {
-          value = "00";
-          setInputTime({ ...inputTime, [key]: value });
+        if (key != "isNoon") {
+          if (!!inputTime[key].length) {
+            value = inputTime[key];
+            if (key == "hour" && inputTime.isNoon == "PM") {
+              value = +value > 12 ? value : String(+value + 12);
+            } else if (key == "hour" && inputTime?.isNoon == "AM" && +value > 12) {
+              copy.isNoon = "PM";
+            }
+          } else {
+            value = "00";
+          }
+          copy[key] = value;
+          localStorage.setItem(key, value);
         }
-        localStorage.setItem(key, value);
       }
+      setInputTime(copy);
       setIsEditMode(false);
       window.alert(t("저장 되었습니다."));
     } else {
@@ -95,6 +105,7 @@ function App() {
             selectIsNoon={selectIsNoon}
           />
         </div>
+        {!isEditMode && <OffTimeBox inputTime={inputTime} />}
       </div>
     </div>
   );
