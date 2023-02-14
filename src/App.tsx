@@ -82,28 +82,30 @@ function App() {
   return (
     <div className="bg-bluegrey-900 w-screen h-screen ">
       <Header KO={KO} EN={EN} changeLang={changeLang} lang={lang} />
-      <div className="w-full h-[90vh] flex flex-col justify-center items-center gap-10 px-[28rem] ">
-        <div className="w-full flex justify-around gap-20 pb-10">
-          <p className="text-gray-100 text-2xl font-bold pb-5">{t("퇴근 언제해...?")}</p>
-          <Btn text={isEditMode ? "확인" : "수정"} func={onSubmit} />
-        </div>
-        <div className="flex gap-10 justify-center items-start">
-          <TimeBox
-            func={onChangeInput}
-            title="근로 시간"
-            names={["totalHour", "totalMin"]}
-            inputTime={inputTime}
-            isEditMode={isEditMode}
-          />
+      <div className="w-full h-[90vh] flex px-10">
+        <div className="flex flex-col justify-center items-center gap-10 flex-1">
+          <div className="flex justify-start gap-20 pb-10">
+            <p className="text-gray-100 text-2xl font-bold pb-5">{t("퇴근 언제해...?")}</p>
+            <Btn text={isEditMode ? "확인" : "수정"} func={onSubmit} />
+          </div>
+          <div className="flex gap-10 justify-center items-start">
+            <TimeBox
+              func={onChangeInput}
+              title="근로 시간"
+              names={["totalHour", "totalMin"]}
+              inputTime={inputTime}
+              isEditMode={isEditMode}
+            />
 
-          <TimeBox
-            func={onChangeInput}
-            title="내 출근 시간"
-            names={["hour", "min"]}
-            inputTime={inputTime}
-            isEditMode={isEditMode}
-            selectIsNoon={selectIsNoon}
-          />
+            <TimeBox
+              func={onChangeInput}
+              title="내 출근 시간"
+              names={["hour", "min"]}
+              inputTime={inputTime}
+              isEditMode={isEditMode}
+              selectIsNoon={selectIsNoon}
+            />
+          </div>
         </div>
         {!isEditMode && <OffTimeBox inputTime={inputTime} />}
       </div>
