@@ -12,5 +12,10 @@
   "수정하세요!": "Turn on Edit mode!",
   "근로 시간": "How much do you work per day?",
   "퇴근 시간은...": "Your off time is...",
-  "남은 시간은...": "your left time is..."
+  "남은 시간은...": "your left time is...",
+  "퇴근!!": "Leave work!!",
+  "야근하세요...?": "Are you working overtime..?",
+  "남은시간": "{{hour}}hours {{min}}minutes {{sec}}seconds",
+  "야근시간": "You worked overtime for {{hour}}hours {{min}}minutes {{sec}}seconds",
+  "총몇분": "a total of {{min}} minutes"
 }
