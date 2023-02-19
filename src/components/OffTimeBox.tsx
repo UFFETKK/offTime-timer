@@ -1,8 +1,10 @@
-import React, { createRef, useEffect, useState } from "react";
+import React, { createRef, useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { ITime } from "../App";
 import moment from "moment";
 import Btn from "./Btn";
+import ProgressBar from "@ramonak/react-progress-bar";
+import running from "../assets/running.gif";
 
 const FORMAT = "YYYY-MM-DD HH:mm";
 function OffTimeBox({ inputTime }: IProps) {
@@ -16,6 +18,8 @@ function OffTimeBox({ inputTime }: IProps) {
   const leftHour = Math.abs(parseInt(String(+totalSec / 3600)));
   const leftMin = Math.abs(parseInt(String((+totalSec % 3600) / 60)));
   const leftSec = Math.abs(+totalSec % 60);
+
+  const wholeSec = +totalHour * 3600 + +totalMin * 600;
 
   const getOffTime = async () => {
     const startTime = moment().format(`YYYY-MM-DD ${hour}:${min}`);
@@ -45,7 +49,22 @@ function OffTimeBox({ inputTime }: IProps) {
     return () => clearInterval(intervalSec);
   }, [totalSec]);
 
-  // console.log(Math.ceil((totalSecNoCounting - totalSec) / totalSecNoCounting));
+  const widthP =
+    ((wholeSec - totalSec) / wholeSec) * 100 > 99 && ((wholeSec - totalSec) / wholeSec) * 100 < 100
+      ? 99
+      : Math.round(((wholeSec - totalSec) / wholeSec) * 100);
+
+  const HowLong = useCallback(() => {
+    let text: string = "";
+    if (widthP > 100) text += "야근하세요..?";
+    else if (widthP > 90) text += "거의 끝!!";
+    else if (widthP > 70) text += "조금만 더!!";
+    else if (widthP > 50) text += "드디어 반!!";
+    else if (widthP > 30) text += "내 일분은 한시간같다...";
+    else if (widthP > 10) text += "천리길도 한걸음부터...";
+    else text = "시작이 반이다...";
+    return t(text, { percent: `${widthP}% ` });
+  }, [widthP]);
 
   useEffect(() => {
     getOffTime();
@@ -60,15 +79,15 @@ function OffTimeBox({ inputTime }: IProps) {
           <p className="text-gray-100 text-[32px] font-bold pb-5">
             {t("남은시간", { hour: leftHour, min: leftMin, sec: leftSec })}
           </p>
-          {/* <div className="relative w-full h-3 rounded-lg bg-w">
-            <p className="absolute left-0 text-w top-3">start</p>
-            <p className="absolute right-0 text-w top-3">end!!!!!</p>
-            <div
-              className={`w-[${(totalSec / totalSecNoCounting) * 100}%] h-full rounded-lg bg-b`}
-            />
-          </div> */}
         </>
       )}
+      <div className="w-full">
+        <div className="flex w-full">
+          <div style={{ width: `${widthP - 13}%` }} />
+          <img src={running} className="w-[120px] h-[100px] pb-5" />
+        </div>
+        <ProgressBar completed={widthP} customLabel={HowLong()} />
+      </div>
       {totalSec < 0 && (
         <div className="flex flex-col justify-center items-center">
           <p className="text-gray-100 text-2xl font-bold pb-5">{t("야근하세요...?")}</p>

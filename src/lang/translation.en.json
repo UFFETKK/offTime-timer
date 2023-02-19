@@ -15,7 +15,14 @@
   "남은 시간은...": "your left time is...",
   "퇴근!!": "Leave work!!",
   "야근하세요...?": "Are you working overtime..?",
+  "야근하세요..?": "{{percent}} Are you working overtime..?",
   "남은시간": "{{hour}}hours {{min}}minutes {{sec}}seconds",
   "야근시간": "You worked overtime for {{hour}}hours {{min}}minutes {{sec}}seconds",
-  "총몇분": "a total of {{min}} minutes"
+  "총몇분": "a total of {{min}} minutes",
+  "시작이 반이다...": "{{percent}} Well begun is half done!",
+  "천리길도 한걸음부터": "{{percent}} A journey of a thousand miles starts with one step",
+  "내 일분은 한시간같다...": "{{percent}} One minute to me is like an hour",
+  "드디어 반!!": "{{percent}} half at last!!",
+  "조금만 더!!": "{{percent}} little bit more!!",
+  "거의 끝!!": "{{percent}} almost done!!"
 }
