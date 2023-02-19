@@ -1,5 +1,4 @@
 import { useTranslation } from "react-i18next";
-import "../index.css";
 
 function Btn({ func, text, color }: IProps) {
   const { t } = useTranslation();

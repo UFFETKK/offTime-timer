@@ -24,5 +24,8 @@
   "내 일분은 한시간같다...": "{{percent}} One minute to me is like an hour",
   "드디어 반!!": "{{percent}} half at last!!",
   "조금만 더!!": "{{percent}} little bit more!!",
-  "거의 끝!!": "{{percent}} almost done!!"
+  "거의 끝!!": "{{percent}} almost done!!",
+  "수고하셨어요!": "Great job! You worked for {{min}} minutes in total.",
+  "리셋": "Reset",
+  "입력을 확인해주세요": "Check your input"
 }

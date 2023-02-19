@@ -1,13 +1,17 @@
-import React, { createRef, useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { ITime } from "../App";
 import moment from "moment";
+
 import Btn from "./Btn";
 import ProgressBar from "@ramonak/react-progress-bar";
+
 import running from "../assets/running.gif";
+import overworked from "../assets/overworked.gif";
+
+import { ITime } from "../App";
 
 const FORMAT = "YYYY-MM-DD HH:mm";
-function OffTimeBox({ inputTime }: IProps) {
+function OffTimeBox({ inputTime, resetInput }: IProps) {
   let intervalSec: any;
   const now = moment().format("YYYY-MM-DD HH:mm:ss");
   const { t } = useTranslation();
@@ -20,13 +24,15 @@ function OffTimeBox({ inputTime }: IProps) {
   const leftSec = Math.abs(+totalSec % 60);
 
   const wholeSec = +totalHour * 3600 + +totalMin * 600;
+  const totalOverWorkedTime = Math.abs(parseInt(String(+totalSec / 60)));
 
-  const getOffTime = async () => {
+  /**
+   * 현재시간에서 남은 초를 구한다.
+   */
+  const getOffTime = () => {
     const startTime = moment().format(`YYYY-MM-DD ${hour}:${min}`);
-    let endTime = moment(startTime).add(+totalHour, "hour").format(FORMAT);
-    if (!!Number(totalMin)) {
-      endTime = moment(startTime).add(+totalMin, "minute").format(FORMAT);
-    }
+    let endTime = moment(startTime).add(+totalHour, "hour").add(+totalMin, "minute").format(FORMAT);
+
     setEndTime(endTime);
 
     const totalSecForLocal = +moment.duration(moment(endTime).diff(now)).asSeconds();
@@ -38,16 +44,9 @@ function OffTimeBox({ inputTime }: IProps) {
 
   const stopToInterval = () => {
     clearInterval(intervalSec);
-    window.alert(t("수고하셨어요!"));
+    resetInput();
+    window.alert(t("수고하셨어요!", { min: totalOverWorkedTime }));
   };
-
-  useEffect(() => {
-    intervalSec = setInterval(() => {
-      setTotalSec((previous) => previous - 1);
-    }, 1000);
-
-    return () => clearInterval(intervalSec);
-  }, [totalSec]);
 
   const widthP =
     ((wholeSec - totalSec) / wholeSec) * 100 > 99 && ((wholeSec - totalSec) / wholeSec) * 100 < 100
@@ -69,6 +68,14 @@ function OffTimeBox({ inputTime }: IProps) {
   useEffect(() => {
     getOffTime();
   }, []);
+
+  useEffect(() => {
+    intervalSec = setInterval(() => {
+      setTotalSec((previous) => previous - 1);
+    }, 1000);
+
+    return () => clearInterval(intervalSec);
+  }, [totalSec]);
   return (
     <div className="flex flex-col gap-5 justify-center items-center flex-1">
       <p className="text-gray-100 text-2xl font-bold pb-5">{t("퇴근 시간은...")}</p>
@@ -79,23 +86,24 @@ function OffTimeBox({ inputTime }: IProps) {
           <p className="text-gray-100 text-[32px] font-bold pb-5">
             {t("남은시간", { hour: leftHour, min: leftMin, sec: leftSec })}
           </p>
+          <div className="flex w-full">
+            <div style={{ width: `${widthP - 13}%` }} />
+            <img src={running} className="w-[120px] h-[100px] pb-5" />
+          </div>
+          <div className="w-full">
+            <ProgressBar completed={widthP} customLabel={HowLong()} />
+          </div>
         </>
       )}
-      <div className="w-full">
-        <div className="flex w-full">
-          <div style={{ width: `${widthP - 13}%` }} />
-          <img src={running} className="w-[120px] h-[100px] pb-5" />
-        </div>
-        <ProgressBar completed={widthP} customLabel={HowLong()} />
-      </div>
       {totalSec < 0 && (
         <div className="flex flex-col justify-center items-center">
+          <img src={overworked} className="w-[50%] h-[45%] pb-5" />
           <p className="text-gray-100 text-2xl font-bold pb-5">{t("야근하세요...?")}</p>
           <p className="text-gray-100 text-[32px] font-bold pb-5">
             {t("야근시간", { hour: leftHour, min: leftMin, sec: leftSec })}
           </p>
           <p className="text-gray-100 text-[32px] font-bold pb-5">
-            {t("총몇분", { min: Math.abs(parseInt(String(+totalSec / 60))) })}
+            {t("총몇분", { min: totalOverWorkedTime })}
           </p>
           <Btn func={stopToInterval} text={t("퇴근!!")} />
         </div>
@@ -106,6 +114,7 @@ function OffTimeBox({ inputTime }: IProps) {
 
 interface IProps {
   inputTime: ITime;
+  resetInput: () => void;
 }
 
 export default OffTimeBox;
